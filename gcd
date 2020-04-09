@@ -1,0 +1,53 @@
+#include<stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <stdbool.h>
+
+int gdc(int n, int m);
+
+
+int calcGdcFromAllArguments(int argc, char *const *argv, int result);
+
+int main(int argc, char *argv[]) {
+
+    int result = 0;
+
+    if (argc > 1) {
+        int n = atoi(argv[0]);
+        int m = atoi(argv[1]);
+        result = gdc(n, m);
+    } else {
+        printf("Please enter at least two integers as arguments\n");
+    }
+
+    result = calcGdcFromAllArguments(argc, argv, result);
+
+    printf("%d", result);
+
+    return 0;
+}
+
+int calcGdcFromAllArguments(int argc, char *const *argv, int result) {
+    for (int i = 2; i < argc; i++) {
+        if (isdigit(*argv[i]) != 0) {
+            int m = atoi(argv[i]);
+            result = gdc(result, m);
+        } else {
+            printf("%s is not an integer and will be ignored in computation\n", argv[i]);
+        }
+    }
+    return result;
+}
+
+int gdc(int n, int m) {
+
+    if (m > n) {
+        return gdc(m, n);
+    }
+
+    if (m == 0) {
+        return n;
+    } else {
+        return gdc(m, n % m);
+    }
+}
