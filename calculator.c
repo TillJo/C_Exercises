@@ -1,4 +1,4 @@
- #include<stdio.h>
+#include<stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <f2fs_fs.h>
@@ -23,12 +23,9 @@ void doCalculation(const char *const *argv, double firstArg, double secondArg);
 
 int main(int argc, char const *argv[]) {
 
-
     if (isValidArgs(argc, argv)) {
-
         double firstArg = atof(argv[1]);
         double secondArg = atof(argv[3]);
-
         doCalculation(argv, firstArg, secondArg);
     }
 
