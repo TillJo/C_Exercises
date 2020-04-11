@@ -1,37 +1,27 @@
+#include "doubleLinkedList.h"
 #include <stdio.h>
 
-struct list_head {
-    struct list_head *next,*prev;
-} ;
 
-struct proc_info {
-    struct list_head head;
-    int pid;
-    int counter;
-    int priority;
-} ;
-
-
-extern void list_init(struct list_head *head){
+extern void list_init(struct listHead *head){
     head->next = head;
     head->prev = head;
 }
 
-extern void list_add(struct list_head *new, struct list_head *head){
+extern void list_add(struct listHead *new, struct listHead *head){
     new->prev = head;
     new->next = head->next;
     head->next->prev = new;
     head->next = new;
 }
 
-extern void list_add_tail(struct list_head *new, struct list_head *head){
+extern void list_add_tail(struct listHead *new, struct listHead *head){
     new -> prev = head->prev;
     head->prev->next = new;
     head->prev = new;
     new->next = head;
 }
 
-extern struct list_head* list_del(struct list_head *entry){
+extern struct listHead* list_del(struct listHead *entry){
     entry->prev->next = entry->next;
     entry->next->prev = entry->prev;
     entry->prev = 0;
@@ -39,30 +29,30 @@ extern struct list_head* list_del(struct list_head *entry){
     return entry;
 }
 
-extern void list_move(struct list_head *entry, struct list_head *head){
-    struct list_head *new = list_del(entry);
+extern void list_move(struct listHead *entry, struct listHead *head){
+    struct listHead *new = list_del(entry);
     list_add(new, head);
 }
 
-extern void list_move_tail(struct list_head *entry, struct list_head *head){
-    struct list_head *new = list_del(entry);
+extern void list_move_tail(struct listHead *entry, struct listHead *head){
+    struct listHead *new = list_del(entry);
     list_add_tail(new, head);
 }
 
-extern int list_empty(struct list_head *head){
+extern int list_empty(struct listHead *head){
     if((head->prev=head) && (head->next==head)){
         return 1;
     } else {
         return 0;
     }
 }
-extern void print_list(struct list_head *head){
+extern void print_list(struct listHead *head){
 
-    struct list_head* iterator = head;
+    struct listHead* iterator = head;
     int counter = 0;
 
     while (iterator->next != head) {
-        printf( "%dth-element with pid: %i ", counter, ((struct proc_info*) iterator->next)->pid);
+        printf( "%dth-element with pid: %i ", counter, ((struct procInfo*) iterator->next)->pid);
         iterator = iterator->next;
         counter++;
     }
@@ -76,14 +66,14 @@ extern void print_list(struct list_head *head){
  */
 int main(int argc, char const *argv[]){
 
-    struct proc_info frist;
-    struct proc_info secound;
-    struct proc_info third;
-    struct proc_info fourth;
-    struct proc_info fifth;
+    struct procInfo frist;
+    struct procInfo secound;
+    struct procInfo third;
+    struct procInfo fourth;
+    struct procInfo fifth;
 
-    struct list_head anker;
-    struct list_head ankerForEmptyTest;
+    struct listHead anker;
+    struct listHead ankerForEmptyTest;
 
     frist.pid = 1;
     secound.pid = 2;
