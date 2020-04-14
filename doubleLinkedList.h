@@ -33,4 +33,8 @@ extern int isEmpty(struct listHead *head);
 
 extern void printList(struct listHead *head);
 
+extern void mapToList(void (*f)() , struct listHead *head);
+
+extern struct procInfo *getJobById(int numberOfJob, struct listHead *head);
+
 #endif

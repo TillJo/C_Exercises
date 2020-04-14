@@ -1,58 +1,61 @@
-#include "doubleLinkedList.h"
 #include <stdio.h>
+#include "doubleLinkedList.h"
 
 
-extern void list_init(struct listHead *head){
+extern void initList(struct listHead *head) {
     head->next = head;
     head->prev = head;
 }
 
-extern void list_add(struct listHead *new, struct listHead *head){
+extern void addToBegin(struct listHead *new, struct listHead *head) {
     new->prev = head;
     new->next = head->next;
     head->next->prev = new;
     head->next = new;
 }
 
-extern void list_add_tail(struct listHead *new, struct listHead *head){
-    new -> prev = head->prev;
+extern void addToTail(struct listHead *new, struct listHead *head) {
+    new->prev = head->prev;
     head->prev->next = new;
     head->prev = new;
     new->next = head;
 }
 
-extern struct listHead* list_del(struct listHead *entry){
+extern struct listHead *delFromList(struct listHead *entry) {
     entry->prev->next = entry->next;
     entry->next->prev = entry->prev;
     entry->prev = 0;
     entry->next = 0;
+    free(entry);
     return entry;
 }
 
-extern void list_move(struct listHead *entry, struct listHead *head){
-    struct listHead *new = list_del(entry);
-    list_add(new, head);
+extern void moveToBegin(struct listHead *entry, struct listHead *head) {
+    struct listHead *new = delFromList(entry);
+    addToBegin(new, head);
 }
 
-extern void list_move_tail(struct listHead *entry, struct listHead *head){
-    struct listHead *new = list_del(entry);
-    list_add_tail(new, head);
+extern void moveToTail(struct listHead *entry, struct listHead *head) {
+    struct listHead *new = delFromList(entry);
+    addToTail(new, head);
 }
 
-extern int list_empty(struct listHead *head){
-    if((head->prev=head) && (head->next==head)){
+extern int isEmpty(struct listHead *head) {
+    if ((head->prev == head) && (head->next == head)) {
         return 1;
     } else {
         return 0;
     }
 }
-extern void print_list(struct listHead *head){
 
-    struct listHead* iterator = head;
+
+extern void printList(struct listHead *head) {
+
+    struct listHead *iterator = head->next;
     int counter = 0;
 
-    while (iterator->next != head) {
-        printf( "%dth-element with pid: %i ", counter, ((struct procInfo*) iterator->next)->pid);
+    while (iterator != head) {
+        printf("%dth-element with pid: %i ", counter, ((struct procInfo *) iterator)->pid);
         iterator = iterator->next;
         counter++;
     }
@@ -60,50 +63,75 @@ extern void print_list(struct listHead *head){
     printf("\n");
 }
 
+extern struct procInfo *getJobById(int numberOfJob, struct listHead *head) {
+    int idx = -1;
+    struct listHead *tempHead = head->next;
+    while (idx < numberOfJob) {
+        tempHead = tempHead->next;
+        idx++;
+    }
+    return (struct procInfo *) tempHead;
+}
+
+
+extern void mapToList(void (*f)(), struct listHead *head) {
+    struct listHead *iterator = head->next;
+    int counter = 0;
+
+    while (iterator != head) {
+        if (iterator != head) {
+            struct procInfo* temp = (struct procInfo *) iterator;
+            f(temp);
+            counter++;
+        }
+        iterator = iterator->next;
+    }
+}
+
 
 /**
  * Only exits for test cases.
  */
-int main(int argc, char const *argv[]){
+int mains(int argc, const char **argv) {
 
     struct procInfo frist;
-    struct procInfo secound;
+    struct procInfo second;
     struct procInfo third;
     struct procInfo fourth;
     struct procInfo fifth;
 
-    struct listHead anker;
-    struct listHead ankerForEmptyTest;
+    struct listHead head;
 
     frist.pid = 1;
-    secound.pid = 2;
+    second.pid = 2;
     third.pid = 3;
     fourth.pid = 4;
     fifth.pid = 5;
 
 
-    list_init(&anker);
-    list_add_tail(&frist.head, &anker);
-    list_add_tail(&secound.head, &anker);
-    list_add_tail(&third.head, &anker);
-    list_add_tail(&fourth.head, &anker);
-    printf("\nTest of list_add_tail: add four elements at end of list\n");
-    print_list(&anker);
-    list_add(&fifth.head,&anker);
-    printf("Test of list_add: add element with pid 5 to begin of list\n");
-    print_list(&anker);
-    list_del(&third.head);
-    printf("Test of list_del: delete element with pid 3\n");
-    print_list(&anker);
-    list_move(&secound.head,&anker);
-    printf("Test of list_move: delete and add element with pid 2 to start of list\n");
-    print_list(&anker);
-    printf("Test of list_move_tail: delete and add element with pid 5 to end of list\n");
-    list_move_tail(&fifth.head,&anker);
-    print_list(&anker);
-    printf("Test of list_empty: Return 0 if list isn't empty\n");
-    printf( "%i\n",list_empty(&anker));
-    printf("Test of list_empty: Return 1 if list is empty\\n");
-    list_init(&ankerForEmptyTest);
-    printf("%i\n",list_empty(&ankerForEmptyTest));
+    initList(&head);
+    addToTail(&frist.head, &head);
+    addToTail(&second.head, &head);
+    addToTail(&third.head, &head);
+    addToTail(&fourth.head, &head);
+    printf("\nTest of addToTail: add four elements at end of list\n");
+    printList(&head);
+    addToBegin(&fifth.head, &head);
+    printf("Test of addToBegin: add element with pid 5 to begin of list\n");
+    printList(&head);
+    delFromList(&third.head);
+    printf("Test of delFromList: delete element with pid 3\n");
+    printList(&head);
+    moveToBegin(&second.head, &head);
+    printf("Test of moveToBegin: delete and add element with pid 2 to start of list\n");
+    printList(&head);
+    printf("Test of moveToTail: delete and add element with pid 5 to end of list\n");
+    moveToTail(&fifth.head, &head);
+    printList(&head);
+    printf("Test of isEmpty: Return 0 if list isn't empty\n");
+    printf("%i\n", isEmpty(&head));
+    printf("Test of isEmpty: Return 1 if list is empty\\n");
+    struct listHead headForEmptyList;
+    initList(&headForEmptyList);
+    printf("%i\n", isEmpty(&headForEmptyList));
 }
